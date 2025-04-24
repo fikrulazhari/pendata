@@ -1,0 +1,84 @@
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 1314, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/asyncio/base_events.py", line 684, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Descriptive Statistics
+numerical_features = ['Age', 'Bilirubin', 'Cholesterol', 'Albumin', 'Copper', 'Alk_Phos', 'SGOT', 'Tryglicerides', 'Platelets', 'Prothrombin']
+display(df_cirrhosis[numerical_features].describe())
+
+# Missing Value Analysis
+missing_values = df_cirrhosis.isnull().sum()
+display(missing_values)
+plt.figure(figsize=(10, 6))
+sns.heatmap(df_cirrhosis.isnull(), cbar=False, cmap='viridis')
+plt.title('Missing Value Heatmap')
+plt.show()
+
+# Data Distribution Visualization
+plt.figure(figsize=(15, 10))
+for i, col in enumerate(numerical_features):
+    plt.subplot(3, 4, i + 1)
+    sns.histplot(df_cirrhosis[col].dropna(), kde=True)
+    plt.title(f'Distribution of {col}')
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(15, 10))
+for i, col in enumerate(numerical_features):
+    plt.subplot(3, 4, i + 1)
+    sns.boxplot(y=df_cirrhosis[col])
+    plt.title(f'Boxplot of {col}')
+plt.tight_layout()
+plt.show()
+
+
+# Categorical Variable Exploration
+categorical_features = ['Status', 'Drug', 'Sex', 'Ascites', 'Hepatomegaly', 'Spiders', 'Edema', 'Stage']
+for col in categorical_features:
+    display(df_cirrhosis[col].value_counts(normalize=True))
+    plt.figure(figsize=(6, 4))
+    df_cirrhosis[col].value_counts().plot(kind='bar')
+    plt.title(f'Distribution of {col}')
+    plt.show()
+
+# Correlation Analysis
+correlation_matrix = df_cirrhosis[numerical_features].corr()
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('Correlation Matrix of Numerical Features')
+plt.show()
+
+# Summarize Findings (Textual Summary -  Replace with your actual observations)
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[2], line 6[0m
+[1;32m      4[0m [38;5;66;03m# Descriptive Statistics[39;00m
+[1;32m      5[0m numerical_features [38;5;241m=[39m [[38;5;124m'[39m[38;5;124mAge[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mBilirubin[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mCholesterol[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mAlbumin[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mCopper[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mAlk_Phos[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mSGOT[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mTryglicerides[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mPlatelets[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mProthrombin[39m[38;5;124m'[39m]
+[0;32m----> 6[0m display([43mdf_cirrhosis[49m[numerical_features][38;5;241m.[39mdescribe())
+[1;32m      8[0m [38;5;66;03m# Missing Value Analysis[39;00m
+[1;32m      9[0m missing_values [38;5;241m=[39m df_cirrhosis[38;5;241m.[39misnull()[38;5;241m.[39msum()
+
+[0;31mNameError[0m: name 'df_cirrhosis' is not defined
+
