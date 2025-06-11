@@ -1,0 +1,116 @@
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 1314, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/asyncio/base_events.py", line 684, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/codespace/.local/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# Uji 2 Data Baru
+uji_baru = pd.DataFrame({
+    'Panjang Tubuh (cm)': [235, 248],
+    'Berat Tubuh (kg)': [225, 215]
+})
+
+prediksi = clf.predict(uji_baru)
+hasil = le.inverse_transform(prediksi)
+
+print("\n=== Prediksi 2 Data Baru ===")
+for i, (p, b) in enumerate(zip(uji_baru['Panjang Tubuh (cm)'], uji_baru['Berat Tubuh (kg)'])):
+    print(f"Data {i+1}: Panjang={p}, Berat={b} → Prediksi: {hasil[i]}")
+
+# Visualisasi Decision Boundary dengan data uji dan garis split
+print("\n=== Visualisasi Decision Boundary ===")
+plot_colors = "ry"  # 2 kelas
+plot_step = 1.0
+
+x_min, x_max = X['Panjang Tubuh (cm)'].min() - 10, X['Panjang Tubuh (cm)'].max() + 10
+y_min, y_max = X['Berat Tubuh (kg)'].min() - 10, X['Berat Tubuh (kg)'].max() + 10
+
+xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
+                     np.arange(y_min, y_max, plot_step))
+
+grid = np.c_[xx.ravel(), yy.ravel()]
+grid_df = pd.DataFrame(grid, columns=['Panjang Tubuh (cm)', 'Berat Tubuh (kg)'])
+Z = clf.predict(grid_df)
+Z = Z.reshape(xx.shape)
+
+plt.figure(figsize=(8, 6))
+plt.contourf(xx, yy, Z, cmap=plt.cm.RdYlBu, alpha=0.6)
+
+# Plot titik data training
+for label, color in zip([0, 1], plot_colors):
+    idx = np.where(y == label)
+    plt.scatter(X.iloc[idx]['Panjang Tubuh (cm)'], X.iloc[idx]['Berat Tubuh (kg)'],
+                c=color, edgecolor='k', label=le.inverse_transform([label])[0])
+
+# Plot data uji
+plt.scatter(uji_baru['Panjang Tubuh (cm)'], uji_baru['Berat Tubuh (kg)'],
+            c='black', marker='X', s=100, label='Data Uji')
+
+# Tambahkan garis splitting dari decision tree
+def plot_splits(tree, feature_names):
+    drawn_lines = set()
+    for node in range(tree.node_count):
+        feature = tree.feature[node]
+        threshold = tree.threshold[node]
+        if feature != -2:  # bukan leaf node
+            feat_name = feature_names[feature]
+            if (feat_name, threshold) not in drawn_lines:
+                if feat_name == 'Panjang Tubuh (cm)':
+                    plt.axvline(x=threshold, color='k', linestyle='--', alpha=0.7, label=f"Split {feat_name}={threshold:.1f}")
+                elif feat_name == 'Berat Tubuh (kg)':
+                    plt.axhline(y=threshold, color='k', linestyle='--', alpha=0.7, label=f"Split {feat_name}={threshold:.1f}")
+                drawn_lines.add((feat_name, threshold))
+            else:
+                # tanpa label supaya legend tidak duplikat
+                if feat_name == 'Panjang Tubuh (cm)':
+                    plt.axvline(x=threshold, color='k', linestyle='--', alpha=0.7)
+                elif feat_name == 'Berat Tubuh (kg)':
+                    plt.axhline(y=threshold, color='k', linestyle='--', alpha=0.7)
+
+plot_splits(clf.tree_, list(X.columns))
+
+plt.xlabel("Panjang Tubuh (cm)")
+plt.ylabel("Berat Tubuh (kg)")
+plt.title("Decision Boundary dengan Data Uji dan Garis Split (Data Kuda)")
+plt.legend(loc='upper left', bbox_to_anchor=(1,1))
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+------------------
+
+----- stdout -----
+
+=== Prediksi 2 Data Baru ===
+Data 1: Panjang=235, Berat=225 → Prediksi: zebra
+Data 2: Panjang=248, Berat=215 → Prediksi: zebra
+
+=== Visualisasi Decision Boundary ===
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[2], line 22[0m
+[1;32m     19[0m x_min, x_max [38;5;241m=[39m X[[38;5;124m'[39m[38;5;124mPanjang Tubuh (cm)[39m[38;5;124m'[39m][38;5;241m.[39mmin() [38;5;241m-[39m [38;5;241m10[39m, X[[38;5;124m'[39m[38;5;124mPanjang Tubuh (cm)[39m[38;5;124m'[39m][38;5;241m.[39mmax() [38;5;241m+[39m [38;5;241m10[39m
+[1;32m     20[0m y_min, y_max [38;5;241m=[39m X[[38;5;124m'[39m[38;5;124mBerat Tubuh (kg)[39m[38;5;124m'[39m][38;5;241m.[39mmin() [38;5;241m-[39m [38;5;241m10[39m, X[[38;5;124m'[39m[38;5;124mBerat Tubuh (kg)[39m[38;5;124m'[39m][38;5;241m.[39mmax() [38;5;241m+[39m [38;5;241m10[39m
+[0;32m---> 22[0m xx, yy [38;5;241m=[39m [43mnp[49m[38;5;241m.[39mmeshgrid(np[38;5;241m.[39marange(x_min, x_max, plot_step),
+[1;32m     23[0m                      np[38;5;241m.[39marange(y_min, y_max, plot_step))
+[1;32m     25[0m grid [38;5;241m=[39m np[38;5;241m.[39mc_[xx[38;5;241m.[39mravel(), yy[38;5;241m.[39mravel()]
+[1;32m     26[0m grid_df [38;5;241m=[39m pd[38;5;241m.[39mDataFrame(grid, columns[38;5;241m=[39m[[38;5;124m'[39m[38;5;124mPanjang Tubuh (cm)[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mBerat Tubuh (kg)[39m[38;5;124m'[39m])
+
+[0;31mNameError[0m: name 'np' is not defined
+
